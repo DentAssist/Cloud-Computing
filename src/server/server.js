@@ -24,14 +24,14 @@ const routes = require('../server/routes');
         const response = request.response;
 
         // Menangani kesalahan input
-        if (response instanceof InputError) {
-            const newResponse = h.response({
-                status: 'fail',
-                message: `${response.message}. Please upload other image`,
-            });
-            newResponse.code(response.statusCode);
-            return newResponse;
-        };
+        // if (response instanceof InputError) {
+        //     const newResponse = h.response({
+        //         status: 'fail',
+        //         message: `${response.message}. Please upload other image`,
+        //     });
+        //     newResponse.code(response.statusCode);
+        //     return newResponse;
+        // };
 
         // Menangani kesalahan server
         if (response.isBoom) {
