@@ -1,4 +1,5 @@
 const postPredictHandler = require('../server/handler');
+const getProfileHandler = require('../server/handler');
 
 const routes = [
     {
@@ -12,6 +13,11 @@ const routes = [
             },
         },
     },
+    {
+        path: '/{idUser}',
+        method: 'GET',
+        handler: getProfileHandler,
+    }
 ];
 
 module.exports = routes;
