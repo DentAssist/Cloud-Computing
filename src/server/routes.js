@@ -1,5 +1,5 @@
 const postPredictHandler = require('../server/handler');
-const getProfileHandler = require('../server/handler');
+const { getProfileHandler } = require('../server/handler');
 
 const routes = [
     {

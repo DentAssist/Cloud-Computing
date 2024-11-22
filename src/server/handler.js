@@ -36,4 +36,4 @@ async function getProfileHandler(request, h) {
     }
 };
 
-module.export = { getProfileHandler };
+module.exports = { getProfileHandler };
