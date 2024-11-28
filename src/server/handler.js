@@ -1,5 +1,7 @@
 const { all } = require('@tensorflow/tfjs-node');
 const { db } = require('../services/storeData');
+const predictClassification = require('../services/inferenceService');
+const crypto = require('crypto');
 
 async function getProfileHandler(request, h) {
     const { idUser } = request.params;
@@ -317,4 +319,32 @@ async function getClinicByIdHandler(request, h) {
     }
 };
 
-module.exports = { getProfileHandler, editProfileHandler, getAllHistoryHandler, deleteAllHistoryHandler, getHistoryByIdHandler, deleteHistoryByIdHandler, getAllArticleHandler, getArticleByIdHandler, getAllClinicHandler, getClinicByIdHandler };
+async function postPredictHandler (request, h) {
+    const { image } = request.payload;
+    const { model } = request.server.app;
+
+    const { confidenceScore, label, suggestion } = await predictClassification(model, image);
+    const id = crypto.randomUUID();
+    const createdAt = new Date().toISOString();
+
+    const data = {
+        'id': id,
+        'label': label,
+        'confidenceScore': confidenceScore,
+        'suggestion': suggestion,
+        'createdAt': createdAt,
+    };
+
+    const predictCollection = db.collection('predictions');
+    await predictCollection.doc(id).set(data);
+
+    const response = h.response({
+        status: 'success',
+        message: 'Model is predicted succesfully',
+        data,
+    });
+    response.code(201);
+    return response;
+};
+
+module.exports = { getProfileHandler, editProfileHandler, getAllHistoryHandler, deleteAllHistoryHandler, getHistoryByIdHandler, deleteHistoryByIdHandler, getAllArticleHandler, getArticleByIdHandler, getAllClinicHandler, getClinicByIdHandler, postPredictHandler };
