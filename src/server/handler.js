@@ -1,6 +1,6 @@
 const { all } = require('@tensorflow/tfjs-node');
 const { db } = require('../services/storeData');
-const predictClassification = require('../services/inferenceService');
+const { predictClassification, findUserEmail, addUser }  = require('../services/inferenceService');
 const crypto = require('crypto');
 
 async function getProfileHandler(request, h) {
@@ -347,4 +347,67 @@ async function postPredictHandler (request, h) {
     return response;
 };
 
-module.exports = { getProfileHandler, editProfileHandler, getAllHistoryHandler, deleteAllHistoryHandler, getHistoryByIdHandler, deleteHistoryByIdHandler, getAllArticleHandler, getArticleByIdHandler, getAllClinicHandler, getClinicByIdHandler, postPredictHandler };
+async function postSignupHandler(request, h) {
+    const { email, username, password } = request.payload;
+
+    // Validate email format
+    const emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailFormat.test(email)) {
+        const response = h.response({
+            status: 'fail',
+            message: 'Invalid email format!',
+        });
+        response.code(400);
+        return response;
+    };
+
+    const isEmailExist = await findUserEmail(email);
+    if (isEmailExist) {
+        const response = h.response({
+            status: 'fail',
+            message: 'Email already exist. Please use another email!'
+        });
+        response.code(400);
+        return response;
+    };
+
+    // validate username format (min 3 char and max 30 char)
+    if (username.length < 3 || username.length > 30) {
+        const response = h.response({
+            status: 'fail',
+            message: 'Username must be between 3 and 30 characters!',
+        });
+        response.code(400);
+        return response;
+    };
+
+    // validate password format (min 8 char of letter and number, and at least have 1 number)
+    const passwordFormat = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+    if (!passwordFormat.test(password)) {
+        const response = h.response({
+            status: 'fail',
+            message: 'Password must be at least 8 characters long and contain both letters and numbers.',
+        });
+        response.code(400);
+        return response;
+    };
+
+    await addUser(email, username, password);
+
+    const response = h.response({
+        status: 'success',
+        message: 'Register Success!',
+    });
+    response.code(201);
+    return response;
+};
+
+async function loginHandler() {
+
+};
+
+async function logoutHandler() {
+
+};
+
+module.exports = { getProfileHandler, editProfileHandler, getAllHistoryHandler, deleteAllHistoryHandler, getHistoryByIdHandler, deleteHistoryByIdHandler, getAllArticleHandler, getArticleByIdHandler, getAllClinicHandler, getClinicByIdHandler, postPredictHandler, postSignupHandler, loginHandler, logoutHandler };

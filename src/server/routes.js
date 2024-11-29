@@ -1,4 +1,4 @@
-const { getProfileHandler, editProfileHandler, getAllHistoryHandler, deleteAllHistoryHandler, getHistoryByIdHandler, deleteHistoryByIdHandler, getAllArticleHandler, getArticleByIdHandler, getAllClinicHandler, getClinicByIdHandler, postPredictHandler } = require('../server/handler');
+const { getProfileHandler, editProfileHandler, getAllHistoryHandler, deleteAllHistoryHandler, getHistoryByIdHandler, deleteHistoryByIdHandler, getAllArticleHandler, getArticleByIdHandler, getAllClinicHandler, getClinicByIdHandler, postPredictHandler, postSignupHandler, loginHandler, logoutHandler } = require('../server/handler');
 
 const routes = [
     {
@@ -11,6 +11,21 @@ const routes = [
                 multipart: true,
             },
         },
+    },
+    {
+        path: '/signup',
+        method: 'POST',
+        handler: postSignupHandler,
+    },
+    {
+        path: '/login',
+        method: 'GET',
+        handler: loginHandler,
+    },
+    {
+        path: '/{idUser}/logout',
+        method: 'POST',
+        handler: logoutHandler,
     },
     {
         path: '/{idUser}',

@@ -1,5 +1,6 @@
 const tf = require('@tensorflow/tfjs-node');
 const InputError = require('../exceptions/InputError');
+const { db } = require('./storeData');
 
 async function predictClassification(model, image) {
     try {
@@ -37,4 +38,26 @@ async function predictClassification(model, image) {
     };
 };
 
-module.exports = predictClassification;
+async function addUser(email, username, password) {
+    const userRef = db.collection('users');
+    const data = {
+        'id': userRef.doc().id,
+        'email': email,
+        'username': username,
+        'password': password,
+    };
+
+    await userRef.doc().set(data);
+};
+
+async function findUserEmail(email) {
+    const userRef = db.collection('users');
+    const snapshot = await userRef.where('email', '==', email).get();
+    if (snapshot.empty) {
+        return null;
+    }
+
+    return snapshot.docs[0].data;
+};
+
+module.exports = { predictClassification, addUser, findUserEmail };
