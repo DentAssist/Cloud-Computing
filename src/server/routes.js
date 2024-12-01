@@ -1,4 +1,4 @@
-const { getProfileHandler, editProfileHandler, getAllHistoryHandler, deleteAllHistoryHandler, getHistoryByIdHandler, deleteHistoryByIdHandler, getAllArticleHandler, getArticleByIdHandler, getAllClinicHandler, getClinicByIdHandler, postPredictHandler, postSignupHandler, loginHandler, logoutHandler } = require('../server/handler');
+const { getProfileHandler, editProfileHandler, getAllHistoryHandler, deleteAllHistoryHandler, getHistoryByIdHandler, deleteHistoryByIdHandler, getAllArticleHandler, getArticleByIdHandler, getAllClinicHandler, getClinicByIdHandler, postPredictHandler, postSignupHandler, loginHandler, logoutHandler, checkSessionHandler } = require('../server/handler');
 
 const routes = [
     {
@@ -27,6 +27,11 @@ const routes = [
         method: 'POST',
         handler: logoutHandler,
 
+    },
+    {
+        path: '/check-session',
+        method: 'GET',
+        handler: checkSessionHandler,
     },
     {
         path: '/{idUser}',

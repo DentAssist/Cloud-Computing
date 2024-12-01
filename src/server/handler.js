@@ -433,8 +433,57 @@ async function loginHandler(request, h) {
     return response;
 };
 
-async function logoutHandler() {
-
+async function logoutHandler(request, h) {
+    const response = h.response({
+        status: 'success',
+        message: 'Logout successful!',
+    });
+    response.unstate('session');
+    response.code(200);
+    return response;
 };
 
-module.exports = { getProfileHandler, editProfileHandler, getAllHistoryHandler, deleteAllHistoryHandler, getHistoryByIdHandler, deleteHistoryByIdHandler, getAllArticleHandler, getArticleByIdHandler, getAllClinicHandler, getClinicByIdHandler, postPredictHandler, postSignupHandler, loginHandler, logoutHandler };
+async function checkSessionHandler(request, h) {
+    // const session = request.state.session;
+
+    // if(!session) {
+    //     const response = h.response({
+    //         status: 'fail',
+    //         message: 'No active session found',
+    //     });
+    //     response.code(401);
+    //     return response;
+    // };
+
+    // try {
+
+    //     const userEmail = session;
+    //     const user = await findUserEmail(userEmail);
+
+    //     if (!user) {
+    //         const response = h.response({
+    //             status: 'fail',
+    //             message: 'Invalid session!',
+    //         });
+    //         response.code(401);
+    //         return response;
+    //     };
+
+    //     const response = h.response({
+    //         status: 'success',
+    //         message: 'Session is active',
+    //     });
+    //     response.code(200);
+    //     return response;
+
+    // } catch (error) {
+    //     const response = h.response({
+    //         status: 'fail',
+    //         message: 'An error occured while checking the session!',
+    //     });
+    //     response.code(500);
+    //     return response;
+    // }
+};
+
+module.exports = { getProfileHandler, editProfileHandler, getAllHistoryHandler, deleteAllHistoryHandler, getHistoryByIdHandler, deleteHistoryByIdHandler, getAllArticleHandler, getArticleByIdHandler, getAllClinicHandler, getClinicByIdHandler, postPredictHandler, postSignupHandler, loginHandler, logoutHandler, checkSessionHandler };
