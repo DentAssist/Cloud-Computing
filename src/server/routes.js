@@ -23,9 +23,10 @@ const routes = [
         handler: loginHandler,
     },
     {
-        path: '/{idUser}/logout',
+        path: '/logout',
         method: 'POST',
         handler: logoutHandler,
+
     },
     {
         path: '/{idUser}',

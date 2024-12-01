@@ -16,6 +16,19 @@ const InputError = require('../exceptions/InputError');
         },
     });
 
+    // server.auth.scheme('session', () => ({
+    //     authenticate: (request, h) => {
+    //       const session = request.state.session;
+    //       if (!session) {
+    //         throw h.unauthenticated();
+    //       }
+    //       return h.authenticated({ credentials: session });
+    //     },
+    //   }));
+    
+    // server.auth.strategy('session', 'session');
+    // server.auth.default('session');
+
     const model = await loadModel();
     server.app.model = model;
 

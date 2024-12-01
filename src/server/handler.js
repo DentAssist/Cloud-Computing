@@ -402,8 +402,35 @@ async function postSignupHandler(request, h) {
     return response;
 };
 
-async function loginHandler() {
+async function loginHandler(request, h) {
+    const { email, password } = request.query;
 
+    const user = await findUserEmail(email);
+    if (!user) {
+        const response = h.response({
+            status: 'fail',
+            message: 'Email is not registered!',
+        });
+        response.code(401);
+        return response;
+    };
+    
+    if (email !== user.email || password !== user.password) {
+        const response = h.response({
+            status: 'fail',
+            message: 'Invalid Email or Password!',
+        });
+        response.code(401);
+        return response;
+    };
+    
+    const response = h.response({
+        status: 'success',
+        message: 'Login Success!',
+    });
+    response.state('session', email, {ttl: 24 * 60 * 60 * 1000, isHttpOnly: true, isSecure: true});
+    response.code(200);
+    return response;
 };
 
 async function logoutHandler() {

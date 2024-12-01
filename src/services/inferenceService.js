@@ -47,7 +47,7 @@ async function addUser(email, username, password) {
         'password': password,
     };
 
-    await userRef.doc().set(data);
+    await userRef.doc(email).set(data);
 };
 
 async function findUserEmail(email) {
@@ -57,7 +57,7 @@ async function findUserEmail(email) {
         return null;
     }
 
-    return snapshot.docs[0].data;
+    return snapshot.docs[0].data();
 };
 
 module.exports = { predictClassification, addUser, findUserEmail };
