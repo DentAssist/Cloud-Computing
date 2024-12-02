@@ -2,6 +2,7 @@ const { all } = require('@tensorflow/tfjs-node');
 const { db } = require('../services/storeData');
 const { predictClassification, findUserEmail, addUser }  = require('../services/inferenceService');
 const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 
 async function getProfileHandler(request, h) {
     const { idUser } = request.params;
@@ -415,7 +416,8 @@ async function loginHandler(request, h) {
         return response;
     };
     
-    if (email !== user.email || password !== user.password) {
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (email !== user.email || !isPasswordValid) {
         const response = h.response({
             status: 'fail',
             message: 'Invalid Email or Password!',

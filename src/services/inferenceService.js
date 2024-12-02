@@ -1,6 +1,7 @@
 const tf = require('@tensorflow/tfjs-node');
 const InputError = require('../exceptions/InputError');
 const { db } = require('./storeData');
+const bcrypt = require('bcrypt');
 
 async function predictClassification(model, image) {
     try {
@@ -39,15 +40,21 @@ async function predictClassification(model, image) {
 };
 
 async function addUser(email, username, password) {
-    const userRef = db.collection('users');
-    const data = {
-        'id': userRef.doc().id,
-        'email': email,
-        'username': username,
-        'password': password,
-    };
+    try {
+        const userRef = db.collection('users');
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-    await userRef.doc(email).set(data);
+        const data = {
+            'id': userRef.doc().id,
+            'email': email,
+            'username': username,
+            'password': hashedPassword,
+        };
+
+        await userRef.doc(email).set(data);
+    } catch (error) {
+        throw new Error('Failed to add user');
+    }
 };
 
 async function findUserEmail(email) {
