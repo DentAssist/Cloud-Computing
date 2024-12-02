@@ -77,7 +77,7 @@ async function editProfileHandler(request, h) {
 async function getAllHistoryHandler(request, h) {
     const { idUser } = request.params;
 
-    try  {
+    try {
         const userRef = db.collection('users').doc(idUser);
         const userDoc = await userRef.get();
 
@@ -88,8 +88,11 @@ async function getAllHistoryHandler(request, h) {
             }).code(404);
         }
 
-        const historyRef = userRef.collection('histories').get();
-        const histories = (await historyRef).docs.map((doc) => ({
+        const historyRef = db.collection('histories').where('idUser', '==', idUser);
+        const historyDoc = await historyRef.get();
+
+        const histories = historyDoc.docs.map((doc) => ({
+            id: doc.id, 
             ...doc.data(),
         }));
 
@@ -105,7 +108,7 @@ async function getAllHistoryHandler(request, h) {
             error: error.message,
         }).code(500);
     }
-};
+}
 
 async function deleteAllHistoryHandler(request, h) {
     const { idUser } = request.params;
@@ -121,8 +124,19 @@ async function deleteAllHistoryHandler(request, h) {
             }).code(404);
         }
 
-        const historyRef = userRef.collection('histories').get();
-        await Promise.all((await historyRef).docs.map((doc) => doc.ref.delete()));
+        const historyRef = db.collection('histories').where('idUser', '==', idUser);
+        const historyDoc = await historyRef.get();
+
+        if (historyDoc.empty) {
+            return h.response({
+                status: 'fail',
+                message: `No history records found for user ${idUser}.`,
+            }).code(404);
+        }
+
+        await Promise.all(
+            historyDoc.docs.map((doc) => doc.ref.delete())
+        );
 
         return h.response({
             status: 'success',
@@ -136,7 +150,7 @@ async function deleteAllHistoryHandler(request, h) {
             error: error.message,
         }).code(500);
     }
-};
+}
 
 async function getHistoryByIdHandler(request, h) { 
     const { idUser, idHistory } = request.params;
@@ -152,17 +166,20 @@ async function getHistoryByIdHandler(request, h) {
             }).code(404);
         }
 
-        const historyRef = userRef.collection('histories').doc(idHistory);
+        const historyRef = db.collection('histories')
+            .where('idUser', '==', idUser)
+            .where('id', '==', idHistory);
+        
         const historyDoc = await historyRef.get();
 
-        if (!historyDoc.exists) {
+        if (historyDoc.empty) {
             return h.response({
                 status: 'fail',
-                message: `History with ID ${idHistory} not found.`,
+                message: `History with ID ${idHistory} not found for user ${idUser}.`,
             }).code(404);
         }
 
-        const historyData = historyDoc.data();
+        const historyData = historyDoc.docs[0].data();
 
         return h.response({
             status: 'success',
@@ -176,7 +193,7 @@ async function getHistoryByIdHandler(request, h) {
             error: error.message,
         }).code(500);
     }
-};
+}
 
 async function deleteHistoryByIdHandler(request, h) {
     const { idUser, idHistory } = request.params;
@@ -192,17 +209,20 @@ async function deleteHistoryByIdHandler(request, h) {
             }).code(404);
         }
 
-        const historyRef = userRef.collection('histories').doc(idHistory);
+        const historyRef = db.collection('histories')
+            .where('idUser', '==', idUser)
+            .where('id', '==', idHistory);
+        
         const historyDoc = await historyRef.get();
 
-        if (!historyDoc.exists) {
+        if (historyDoc.empty) {
             return h.response({
                 status: 'fail',
-                message: `History with ID ${idHistory} not found.`,
+                message: `History with ID ${idHistory} not found for user ${idUser}.`,
             }).code(404);
         }
 
-        await historyRef.delete();
+        await historyDoc.docs[0].ref.delete();
 
         return h.response({
             status: 'success',
@@ -219,6 +239,8 @@ async function deleteHistoryByIdHandler(request, h) {
 }
 
 async function getAllArticleHandler(request, h) {
+    const { search } = request.params;
+
     try {
         const articleRef = db.collection('articles');
         const articles = (await articleRef.get()).docs.map((doc) => ({
