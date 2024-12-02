@@ -371,14 +371,14 @@ async function postPredictHandler (request, h) {
     };
 
     const predictCollection = db.collection('predictions');
-    await predictCollection.doc(id).set(data);
+    await predictCollection.doc(id).set({...data});
 
     const historyRef = db.collection('histories');
     const historyId = historyRef.doc().id;
     const historyData = {
         'id': historyId,
         'idUser': userDoc.id,
-        'prediction': data,
+        'prediction': {...data},
     };
     await historyRef.doc(historyId).set(historyData);
 
