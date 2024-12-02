@@ -19,7 +19,7 @@ const {
 
 const routes = [
     {
-        path: '/predict',
+        path: '/{idUser}/predict',
         method: 'POST',
         handler: postPredictHandler,
         options: {
