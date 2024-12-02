@@ -323,6 +323,21 @@ async function getClinicByIdHandler(request, h) {
 async function postPredictHandler (request, h) {
     const { image } = request.payload;
     const { model } = request.server.app;
+    const { idUser } = request.params;
+
+    const userRef = db.collection('users');
+    const isUserExist = await userRef.where('id', '==', idUser).get();
+
+    if(isUserExist.empty) {
+        const response = h.response({
+            status: 'fail',
+            message: 'User not found',
+        });
+        response.code(401);
+        return response;
+    };
+
+    const userDoc = isUserExist.docs[0].data();
 
     const { confidenceScore, label, suggestion } = await predictClassification(model, image);
     const id = crypto.randomUUID();
@@ -338,6 +353,14 @@ async function postPredictHandler (request, h) {
 
     const predictCollection = db.collection('predictions');
     await predictCollection.doc(id).set(data);
+
+    const historyRef = db.collection('histories');
+    const historyData = {
+        'id': historyRef.doc().id,
+        'idUser': userDoc.id,
+        'prediction': data,
+    };
+    await historyRef.doc().set(historyData);
 
     const response = h.response({
         status: 'success',
@@ -430,7 +453,7 @@ async function loginHandler(request, h) {
         status: 'success',
         message: 'Login Success!',
     });
-    response.state('session', email, {ttl: 24 * 60 * 60 * 1000, isHttpOnly: true, isSecure: true});
+    response.state('session', user.id, {ttl: 24 * 60 * 60 * 1000, isHttpOnly: true, isSecure: true});
     response.code(200);
     return response;
 };
