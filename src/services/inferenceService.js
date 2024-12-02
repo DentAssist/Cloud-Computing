@@ -43,15 +43,16 @@ async function addUser(email, username, password) {
     try {
         const userRef = db.collection('users');
         const hashedPassword = await bcrypt.hash(password, 10);
+        const userId = userRef.doc().id;
 
         const data = {
-            'id': userRef.doc().id,
+            'id': userId,
             'email': email,
             'username': username,
             'password': hashedPassword,
         };
 
-        await userRef.doc().set(data);
+        await userRef.doc(userId).set(data);
     } catch (error) {
         throw new Error('Failed to add user');
     }
