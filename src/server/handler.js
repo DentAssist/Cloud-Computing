@@ -453,6 +453,7 @@ async function loginHandler(request, h) {
     const response = h.response({
         status: 'success',
         message: 'Login Success!',
+        idUser: user.id,
     });
     response.state('session', user.id, {ttl: 24 * 60 * 60 * 1000, isHttpOnly: true, isSecure: true});
     response.code(200);
