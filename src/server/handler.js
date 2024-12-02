@@ -339,7 +339,7 @@ async function getClinicByIdHandler(request, h) {
     }
 };
 
-async function postPredictHandler (request, h) {
+async function postPredictHandler(request, h) {
     const { image } = request.payload;
     const { model } = request.server.app;
     const { idUser } = request.params;
@@ -347,49 +347,43 @@ async function postPredictHandler (request, h) {
     const userRef = db.collection('users');
     const isUserExist = await userRef.where('id', '==', idUser).get();
 
-    if(isUserExist.empty) {
+    if (isUserExist.empty) {
         const response = h.response({
             status: 'fail',
             message: 'User not found',
         });
         response.code(401);
         return response;
-    };
+    }
 
     const userDoc = isUserExist.docs[0].data();
 
+    // Predict image
     const { confidenceScore, label, suggestion } = await predictClassification(model, image);
-    const id = crypto.randomUUID();
+    const id = crypto.randomUUID();  
     const createdAt = new Date().toISOString();
 
     const data = {
         'id': id,
+        'idUser': idUser, 
         'label': label,
         'confidenceScore': confidenceScore,
         'suggestion': suggestion,
         'createdAt': createdAt,
     };
 
-    const predictCollection = db.collection('predictions');
-    await predictCollection.doc(id).set({...data});
-
+    // Store data to Firestore 'histories' collection
     const historyRef = db.collection('histories');
-    const historyId = historyRef.doc().id;
-    const historyData = {
-        'id': historyId,
-        'idUser': userDoc.id,
-        'prediction': {...data},
-    };
-    await historyRef.doc(historyId).set(historyData);
+    await historyRef.doc(id).set(data);
 
     const response = h.response({
         status: 'success',
-        message: 'Model is predicted succesfully',
+        message: 'Model is predicted successfully',
         data,
     });
     response.code(201);
     return response;
-};
+}
 
 async function postSignupHandler(request, h) {
     const { email, username, password } = request.payload;
