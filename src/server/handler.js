@@ -92,7 +92,6 @@ async function getAllHistoryHandler(request, h) {
         const historyDoc = await historyRef.get();
 
         const histories = historyDoc.docs.map((doc) => ({
-            id: doc.id, 
             ...doc.data(),
         }));
 
@@ -239,8 +238,6 @@ async function deleteHistoryByIdHandler(request, h) {
 }
 
 async function getAllArticleHandler(request, h) {
-    const { search } = request.params;
-
     try {
         const articleRef = db.collection('articles');
         const articles = (await articleRef.get()).docs.map((doc) => ({
