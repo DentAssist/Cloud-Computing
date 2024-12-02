@@ -53,13 +53,6 @@ const routes = [
             tags: ['api', 'auth'],
             description: 'Register a new user',
             notes: 'Request payload should include email, username, and password.',
-            validate: {
-                payload: Joi.object({
-                    email: Joi.string().email().required().description('Valid email address'),
-                    username: Joi.string().min(3).max(30).required().description('Username between 3 and 30 characters'),
-                    password: Joi.string().pattern(/^(?=.*[a-zA-Z])(?=.*\d).{8,}$/).required().description('Password with at least 8 characters, including letters and numbers'),
-                }),
-            },
         },
     },
     {
@@ -70,12 +63,6 @@ const routes = [
             tags: ['api', 'auth'],
             description: 'Log in a user',
             notes: 'Request query must include email and password.',
-            validate: {
-                query: Joi.object({
-                    email: Joi.string().email().required().description('Registered email address'),
-                    password: Joi.string().required().description('User password'),
-                }),
-            },
         },
     },
     {
