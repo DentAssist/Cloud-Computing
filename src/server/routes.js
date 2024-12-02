@@ -62,7 +62,7 @@ const routes = [
         options: {
             tags: ['api', 'auth'],
             description: 'Log in a user',
-            notes: 'Request query must include email and password.',
+            notes: 'Request params must include email and password.',
         },
     },
     {

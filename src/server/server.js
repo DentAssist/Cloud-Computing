@@ -44,10 +44,9 @@ const package = require('../../package.json');
             description: 'An Ml integrated API to predict oral and dental disease',
         },
         tags: [ // predict, auth, user, history, article, clinic
-            { name: 'predict', description: 'Endpoints related to prediction of oral and dental disease' },
             { name: 'articles', description: 'Endpoints related to article' },
             { name: 'clinics', description: 'Endpoints related to clinic' },
-            { name: '{idUser}', description: 'Endpoints related to user profile and history' },
+            { name: '{idUser}', description: 'Endpoints related to user profile, prediction, and history' },
             { name: 'login', description: 'Endpoints related to login' },
             { name: 'signup', description: 'Endpoints related to signup' },
             { name: 'logout', description: 'Endpoints related to logout' },
