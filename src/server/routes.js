@@ -108,7 +108,7 @@ const routes = [
                     idUser: Joi.string().required().description('User ID'),
                 }),
                 payload: Joi.object({
-                    name: Joi.string().optional().description('User name'),
+                    username: Joi.string().optional().description('User name'),
                     email: Joi.string().email().optional().description('User email'),
                     password: Joi.string().optional().description('User password'),
                     city: Joi.string().optional().description('User city'),

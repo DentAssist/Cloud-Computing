@@ -36,7 +36,7 @@ async function getProfileHandler(request, h) {
 
 async function editProfileHandler(request, h) {
     const { idUser } = request.params;
-    const { name, email, password, city } = request.payload;
+    const { username, email, password, city } = request.payload;
     const updatedAt = new Date().toISOString();
 
     try {
@@ -52,7 +52,7 @@ async function editProfileHandler(request, h) {
 
         const userData = userDoc.data();
         const updateData = {
-            name: name || userData.name,
+            username: username || userData.username,
             email: email || userData.email,
             password: password || userData.password,
             city: city || userData.city,
