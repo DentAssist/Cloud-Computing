@@ -13,8 +13,8 @@ const package = require('../../package.json');
 
 (async () => {
     const server = Hapi.server({
-        port: 3000,
-        host: 'localhost',
+        port: 8080,
+        host: process.env.NODE_ENV !== "production" ? "localhost" : "0.0.0.0",
         routes: {
             cors: {
                 origin: ['*'],
