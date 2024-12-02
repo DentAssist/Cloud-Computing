@@ -5,6 +5,12 @@ const routes = require('../server/routes');
 const loadModel = require('../services/loadModel');
 const InputError = require('../exceptions/InputError');
 
+// Swagger dependencies
+const Inert = require('@hapi/inert');
+const Vision = require('@hapi/vision');
+const HapiSwagger = require('hapi-swagger');
+const package = require('../../package.json');
+
 (async () => {
     const server = Hapi.server({
         port: 3000,
@@ -28,6 +34,44 @@ const InputError = require('../exceptions/InputError');
     
     // server.auth.strategy('session', 'session');
     // server.auth.default('session');
+
+    
+    // Setup Swagger options
+    const swaggerOptions = {
+        info: {
+            version: package.version,
+            title:'DentAssist API Documentation',
+            description: 'An Ml integrated API to predict oral and dental disease',
+        },
+        tags: [ // predict, auth, user, history, article, clinic
+            { name: 'predict', description: 'Endpoints related to prediction of oral and dental disease' },
+            { name: 'articles', description: 'Endpoints related to article' },
+            { name: 'clinics', description: 'Endpoints related to clinic' },
+            { name: '{idUser}', description: 'Endpoints related to user profile and history' },
+            { name: 'login', description: 'Endpoints related to login' },
+            { name: 'signup', description: 'Endpoints related to signup' },
+            { name: 'logout', description: 'Endpoints related to logout' },
+        ],
+        // securityDefinitions: {
+        //     'jwt': {
+        //         'type': 'apiKey',
+        //         'name': 'Authorization',
+        //         'in': 'header'
+        //     }
+        // },
+        // security: [{ 'jwt': [] }],
+        auth: false
+    };
+
+    // Register Swagger
+    await server.register([
+        Inert,
+        Vision,
+        {
+            plugin: HapiSwagger,
+            options: swaggerOptions
+        }
+    ]);
 
     const model = await loadModel();
     server.app.model = model;

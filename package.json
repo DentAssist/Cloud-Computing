@@ -14,9 +14,13 @@
   "dependencies": {
     "@google-cloud/firestore": "^7.10.0",
     "@hapi/hapi": "^21.3.12",
+    "@hapi/inert": "^7.1.0",
+    "@hapi/vision": "^7.0.3",
     "@tensorflow/tfjs-node": "^4.14.0",
     "bcrypt": "^5.1.1",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "hapi-swagger": "^17.3.1",
+    "joi": "^17.13.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"

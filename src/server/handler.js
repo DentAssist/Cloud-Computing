@@ -488,4 +488,20 @@ async function checkSessionHandler(request, h) {
     // }
 };
 
-module.exports = { getProfileHandler, editProfileHandler, getAllHistoryHandler, deleteAllHistoryHandler, getHistoryByIdHandler, deleteHistoryByIdHandler, getAllArticleHandler, getArticleByIdHandler, getAllClinicHandler, getClinicByIdHandler, postPredictHandler, postSignupHandler, loginHandler, logoutHandler, checkSessionHandler };
+module.exports = { 
+    getProfileHandler, 
+    editProfileHandler, 
+    getAllHistoryHandler, 
+    deleteAllHistoryHandler, 
+    getHistoryByIdHandler, 
+    deleteHistoryByIdHandler, 
+    getAllArticleHandler, 
+    getArticleByIdHandler, 
+    getAllClinicHandler, 
+    getClinicByIdHandler, 
+    postPredictHandler, 
+    postSignupHandler, 
+    loginHandler, 
+    logoutHandler, 
+    checkSessionHandler 
+};
