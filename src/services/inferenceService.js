@@ -51,7 +51,7 @@ async function addUser(email, username, password) {
             'password': hashedPassword,
         };
 
-        await userRef.doc(email).set(data);
+        await userRef.doc().set(data);
     } catch (error) {
         throw new Error('Failed to add user');
     }
