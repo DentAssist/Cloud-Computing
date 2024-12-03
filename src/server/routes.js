@@ -10,6 +10,8 @@ const {
     getArticleByIdHandler, 
     getAllClinicHandler, 
     getClinicByIdHandler, 
+    getAllProductHandler,
+    getProductByIdHandler,
     postPredictHandler, 
     postSignupHandler, 
     loginHandler, 
@@ -228,6 +230,31 @@ const routes = [
             },
         },
     },
+    {
+        path: '/products',
+        method: 'GET',
+        handler: getAllProductHandler,
+        options: {
+            tags: ['api', 'product'],
+            description: 'Get all products',
+            notes: 'Fetches all products available in the system.',
+        },
+    },
+    {
+        path: '/products/{idProduct}',
+        method: 'GET',
+        handler: getProductByIdHandler,
+        options: {
+            tags: ['api', 'product'],
+            description: 'Get a product by ID',
+            notes: 'Fetches details of a specific product by its ID.',
+            validate: {
+                params: Joi.object({
+                    idProduct: Joi.string().required().description('Product ID'),
+                }),
+            },
+        },
+    }
 ];
 
 module.exports = routes;

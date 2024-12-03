@@ -339,6 +339,57 @@ async function getClinicByIdHandler(request, h) {
     }
 };
 
+async function getAllProductHandler(request, h) {
+    try {
+        const productRef = db.collection('products');
+        const products = (await productRef.get()).docs.map((doc) => ({
+            ...doc.data(),
+        }));
+
+        return h.response({
+            status: 'success',
+            data: products,
+        }).code(200);
+
+    } catch (error) {
+        return h.response({
+            status: 'error',
+            message: 'Internal server error.',
+            error: error.message,
+        }).code(500);
+    }
+};
+
+async function getProductByIdHandler(request, h) {
+    const { idProduct } = request.params;
+
+    try {
+        const productRef = db.collection('products').doc(idProduct);
+        const productDoc = await productRef.get();
+
+        if (!productDoc.exists) {
+            return h.response({
+                status: 'fail',
+                message: `Product with ID ${idProduct} not found.`,
+            }).code(404);
+        }
+
+        const productData = productDoc.data();
+
+        return h.response({
+            status: 'success',
+            data: productData,
+        }).code(200);
+
+    } catch (error) {
+        return h.response({
+            status: 'error',
+            message: 'Internal server error.',
+            error: error.message,
+        }).code(500);
+    }    
+}
+
 async function postPredictHandler(request, h) {
     const { image } = request.payload;
     const { model } = request.server.app;
@@ -537,6 +588,8 @@ module.exports = {
     getArticleByIdHandler, 
     getAllClinicHandler, 
     getClinicByIdHandler, 
+    getAllProductHandler,
+    getProductByIdHandler,
     postPredictHandler, 
     postSignupHandler, 
     loginHandler, 
