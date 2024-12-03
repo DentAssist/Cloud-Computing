@@ -43,9 +43,10 @@ const package = require('../../package.json');
             title:'DentAssist API Documentation',
             description: 'An Ml integrated API to predict oral and dental disease',
         },
-        tags: [ // predict, auth, user, history, article, clinic
+        tags: [ // predict, auth, user, history, article, clinic, product
             { name: 'articles', description: 'Endpoints related to article' },
             { name: 'clinics', description: 'Endpoints related to clinic' },
+            { name: 'products', description: 'Endpoints related to product' },
             { name: '{idUser}', description: 'Endpoints related to user profile, prediction, and history' },
             { name: 'login', description: 'Endpoints related to login' },
             { name: 'signup', description: 'Endpoints related to signup' },
