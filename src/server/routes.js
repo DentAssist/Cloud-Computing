@@ -33,6 +33,9 @@ const routes = [
             description: 'Predict oral and dental disease',
             notes: 'Request payload must include an image file in form-data with key "image".',
             validate: {
+                params: Joi.object({
+                    idUser: Joi.string().required().description('User ID'),
+                }),
                 payload: Joi.object({
                     image: Joi.any()
                         .meta({ swaggerType: 'file' }) 
@@ -55,6 +58,13 @@ const routes = [
             tags: ['api', 'auth'],
             description: 'Register a new user',
             notes: 'Request payload should include email, username, and password.',
+            validate: {
+                payload: Joi.object({
+                    email: Joi.string().email().required().description('User email'),
+                    username: Joi.string().required().description('User name'),
+                    password: Joi.string().required().description('User password'),
+                }),
+            },
         },
     },
     {
@@ -65,6 +75,12 @@ const routes = [
             tags: ['api', 'auth'],
             description: 'Log in a user',
             notes: 'Request params must include email and password.',
+            validate: {
+                query: Joi.object({
+                    email: Joi.string().email().required().description('User email'),
+                    password: Joi.string().required().description('User password'),
+                }),
+            },
         },
     },
     {
