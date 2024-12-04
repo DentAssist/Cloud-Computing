@@ -69,14 +69,14 @@ const routes = [
     },
     {
         path: '/login',
-        method: 'GET',
+        method: 'POST',
         handler: loginHandler,
         options: {
             tags: ['api', 'auth'],
             description: 'Log in a user',
-            notes: 'Request params must include email and password.',
+            notes: 'Request body must include email and password.',
             validate: {
-                query: Joi.object({
+                payload: Joi.object({  
                     email: Joi.string().email().required().description('User email'),
                     password: Joi.string().required().description('User password'),
                 }),

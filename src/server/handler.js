@@ -492,7 +492,7 @@ async function postSignupHandler(request, h) {
 };
 
 async function loginHandler(request, h) {
-    const { email, password } = request.query;
+    const { email, password } = request.payload;
 
     const user = await findUserEmail(email);
     if (!user) {
