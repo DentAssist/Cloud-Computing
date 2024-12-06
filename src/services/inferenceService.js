@@ -5,38 +5,46 @@ const bcrypt = require('bcrypt');
 
 async function predictClassification(model, image) {
     try {
-        // Konversi gambar menjadi tensor
-        const tensor = tf.node.decodePng(image).resizeNearestNeighbor([224, 224]).expandDims().toFloat();
+        // Preprocessing image sesuai dengan model
+        const tensor = tf.node
+            .decodeJpeg(image)
+            .resizeNearestNeighbor([150, 150])
+            .expandDims() 
+            .toFloat()
+            .div(255.0); // Normalisasi ke [0, 1]
 
-        const prediction = model.predict(tensor);
-        const score = await prediction.data();
-        const confidenceScore = score[0] * 100;
+        // Prediksi menggunakan model
+        const prediction = model.predict(tensor); 
+        const scores = await prediction.data(); 
+        const confidenceScore = Math.max(...scores) * 100; // Ambil skor tertinggi
 
-        let predictionResult = '';
-        
-        if (confidenceScore > 50) {
-            predictionResult = 'Cancer';
-        };
+        const classes = ['class A', 'class B', 'class C', 'class D', 'class E'];
+        const classResult = tf.argMax(prediction, axis=1).dataSync()[0];
+        const label = classes[classResult];
 
-        if (confidenceScore <= 50) {
-            predictionResult = 'Non-Cancer';
-        };
-
-        const label = predictionResult;
         let suggestion;
+        switch (label) {
+            case 'class A':
+                suggestion = 'ini class A';
+                break;
+            case 'class B':
+                suggestion = 'ini class B';
+                break;
+            case 'class C':
+                suggestion = 'ini class C';
+                break;
+            case 'class D':
+                suggestion = 'ini class D';
+                break;
+            case 'class E':
+                suggestion = 'ini class E';
+                break;
+        }
 
-        if (label === 'Cancer') {
-            suggestion = 'Segera Periksa ke Dokter';
-        };
-
-        if (label === 'Non-Cancer') {
-            suggestion = 'Penyakit Kanker Tidak Terdeteksi';
-        };
-
-        return {confidenceScore, label, suggestion};
+        return { confidenceScore, label, suggestion };
     } catch (error) {
-        throw new InputError(`${error.message}`);
-    };
+        throw new InputError(`Terjadi kesalahan: ${error.message}`);
+    }
 };
 
 async function addUser(email, username, password) {
