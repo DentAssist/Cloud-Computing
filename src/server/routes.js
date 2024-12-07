@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const { 
-    getProfileHandler, 
-    editProfileHandler, 
+    getUserHandler, 
+    editUserHandler, 
     getAllHistoryHandler, 
     deleteAllHistoryHandler, 
     getHistoryByIdHandler, 
@@ -21,7 +21,7 @@ const {
 
 const routes = [
     {
-        path: '/{idUser}/predict',
+        path: '/predict',
         method: 'POST',
         handler: postPredictHandler,
         options: {
@@ -33,10 +33,8 @@ const routes = [
             description: 'Predict oral and dental disease',
             notes: 'Request payload must include an image file in form-data with key "image".',
             validate: {
-                params: Joi.object({
-                    idUser: Joi.string().required().description('User ID'),
-                }),
                 payload: Joi.object({
+                    idUser: Joi.string().required().description('User ID'),
                     image: Joi.any()
                         .meta({ swaggerType: 'file' }) 
                         .required()
@@ -51,7 +49,7 @@ const routes = [
         },
     },
     {
-        path: '/signup',
+        path: '/auth/signup',
         method: 'POST',
         handler: postSignupHandler,
         options: {
@@ -63,12 +61,13 @@ const routes = [
                     email: Joi.string().email().required().description('User email'),
                     username: Joi.string().required().description('User name'),
                     password: Joi.string().required().description('User password'),
+                    city: Joi.string().required().description('User city'),
                 }),
             },
         },
     },
     {
-        path: '/login',
+        path: '/auth/login',
         method: 'POST',
         handler: loginHandler,
         options: {
@@ -84,7 +83,7 @@ const routes = [
         },
     },
     {
-        path: '/logout',
+        path: '/auth/logout',
         method: 'POST',
         handler: logoutHandler,
         options: {
@@ -99,9 +98,9 @@ const routes = [
         handler: checkSessionHandler,
     },
     {
-        path: '/{idUser}',
+        path: '/users/{idUser}',
         method: 'GET',
-        handler: getProfileHandler,
+        handler: getUserHandler,
         options: {
             tags: ['api', 'user'],
             description: 'Retrieve user profile by ID',
@@ -114,9 +113,9 @@ const routes = [
         },
     },
     {
-        path: '/{idUser}',
+        path: '/users/{idUser}',
         method: 'PUT',
-        handler: editProfileHandler,
+        handler: editUserHandler,
         options: {
             tags: ['api', 'user'],
             description: 'Update user profile',
@@ -135,7 +134,7 @@ const routes = [
         },
     },
     {
-        path: '/{idUser}/histories',
+        path: '/users/{idUser}/histories',
         method: 'GET',
         handler: getAllHistoryHandler,
         options: {
@@ -150,7 +149,7 @@ const routes = [
         },
     },
     {
-        path: '/{idUser}/histories',
+        path: '/users/{idUser}/histories',
         method: 'DELETE',
         handler: deleteAllHistoryHandler,
         options: {
@@ -165,7 +164,7 @@ const routes = [
         },
     },
     {
-        path: '/{idUser}/histories/{idHistory}',
+        path: '/users/{idUser}/histories/{idHistory}',
         method: 'GET',
         handler: getHistoryByIdHandler,
         options: {
@@ -181,7 +180,7 @@ const routes = [
         },
     },
     {
-        path: '/{idUser}/histories/{idHistory}',
+        path: '/users/{idUser}/histories/{idHistory}',
         method: 'DELETE',
         handler: deleteHistoryByIdHandler,
         options: {

@@ -1,9 +1,12 @@
 runtime: nodejs18
 
-service: default
+service: development
 
 entrypoint: npm run start
 
 handlers:
+  - url: /public
+    static_dir: public
+
   - url: /.*
     script: auto

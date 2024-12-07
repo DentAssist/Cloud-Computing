@@ -4,7 +4,7 @@ const { predictClassification, findUserEmail, addUser }  = require('../services/
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 
-async function getProfileHandler(request, h) {
+async function getUserHandler(request, h) {
     const { idUser } = request.params;
 
     try {
@@ -34,7 +34,7 @@ async function getProfileHandler(request, h) {
     }
 };
 
-async function editProfileHandler(request, h) {
+async function editUserHandler(request, h) {
     const { idUser } = request.params;
     const { username, email, password, city } = request.payload;
     const updatedAt = new Date().toISOString();
@@ -391,9 +391,8 @@ async function getProductByIdHandler(request, h) {
 }
 
 async function postPredictHandler(request, h) {
-    const { image } = request.payload;
+    const { idUser, image } = request.payload;
     const { model } = request.server.app;
-    const { idUser } = request.params;
 
     const userRef = db.collection('users');
     const isUserExist = await userRef.where('id', '==', idUser).get();
@@ -448,7 +447,7 @@ async function postPredictHandler(request, h) {
 }
 
 async function postSignupHandler(request, h) {
-    const { email, username, password } = request.payload;
+    const { email, username, password, city } = request.payload;
 
     // Validate email format
     const emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -492,7 +491,7 @@ async function postSignupHandler(request, h) {
         return response;
     };
 
-    await addUser(email, username, password);
+    await addUser(email, username, password, city);
 
     const response = h.response({
         status: 'success',
@@ -589,8 +588,8 @@ async function checkSessionHandler(request, h) {
 };
 
 module.exports = { 
-    getProfileHandler, 
-    editProfileHandler, 
+    getUserHandler, 
+    editUserHandler, 
     getAllHistoryHandler, 
     deleteAllHistoryHandler, 
     getHistoryByIdHandler, 
