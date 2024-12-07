@@ -18,30 +18,35 @@ async function predictClassification(model, image) {
         const scores = await prediction.data(); 
         const confidenceScore = Math.max(...scores) * 100; // Ambil skor tertinggi
 
-        const classes = ['class A', 'class B', 'class C', 'class D', 'class E'];
+        const classes = ['Calculus', 'Hypodontia', 'Healthy', 'Mouth Ulcer', 'Caries'];
         const classResult = tf.argMax(prediction, axis=1).dataSync()[0];
         const label = classes[classResult];
 
-        let suggestion;
+        let suggestion, explanation;
         switch (label) {
-            case 'class A':
-                suggestion = 'ini class A';
+            case 'Calculus':
+                explanation = 'Penyakit Calculus adalah ...';
+                suggestion = 'Anda disarankan untuk mengobati Calculus';
                 break;
-            case 'class B':
-                suggestion = 'ini class B';
+            case 'Hypodontia':
+                explanation = 'Penyakit Hypodontia adalah ...';
+                suggestion = 'Anda disarankan untuk mengobati Hypodontia';
                 break;
-            case 'class C':
-                suggestion = 'ini class C';
+            case 'Healthy':
+                explanation = 'Mulut anda sehat';
+                suggestion = 'Anda disarankan untuk terus menjaga kesehatan mulut dan gigi Anda';
                 break;
-            case 'class D':
-                suggestion = 'ini class D';
+            case 'Mouth Ulcer':
+                explanation = 'Penyakit Mouth Ulcer (Sariawan) adalah ...';
+                suggestion = 'Anda disarankan untuk mengobati Sariawan';
                 break;
-            case 'class E':
-                suggestion = 'ini class E';
+            case 'Caries':
+                explanation = 'Penyakit Caries adalah ...';
+                suggestion = 'Anda disarankan untuk mengobati Caries';
                 break;
         }
 
-        return { confidenceScore, label, suggestion };
+        return { confidenceScore, label, suggestion, explanation };
     } catch (error) {
         throw new InputError(`Terjadi kesalahan: ${error.message}`);
     }
@@ -52,12 +57,16 @@ async function addUser(email, username, password) {
         const userRef = db.collection('users');
         const hashedPassword = await bcrypt.hash(password, 10);
         const userId = userRef.doc().id;
+        const createdAt = new Date().toISOString();
+        const defaultImage = './public/image/default-profile-picture.png';
 
         const data = {
             'id': userId,
             'email': email,
             'username': username,
             'password': hashedPassword,
+            'profileImage': defaultImage,
+            createdAt,
         };
 
         await userRef.doc(userId).set(data);

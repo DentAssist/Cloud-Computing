@@ -407,19 +407,30 @@ async function postPredictHandler(request, h) {
         return response;
     }
 
-    const userDoc = isUserExist.docs[0].data();
-
     // Predict image
-    const { confidenceScore, label, suggestion } = await predictClassification(model, image);
+    const { confidenceScore, label, suggestion, explanation } = await predictClassification(model, image);
     const id = crypto.randomUUID();  
     const createdAt = new Date().toISOString();
+
+    const articleRef = db.collection('articles');
+    const articleDoc = await articleRef.where('tag', '==', label).get();
+    const articleSnapshot = !articleDoc.empty ? articleDoc.docs[0].data() : null;
+
+    const productRef = db.collection('products');
+    const productDoc = await productRef.where('disease', '==', label).get();
+    const productSnapshot = !productDoc.empty ? productDoc.docs[0].data() : null;
 
     const data = {
         'id': id,
         'idUser': idUser, 
         'label': label,
         'confidenceScore': confidenceScore,
+        'explanation': explanation,
         'suggestion': suggestion,
+        'idProduct': productSnapshot ? productSnapshot.idProduct : 'Produk tidak ditemukan!',
+        'product': productSnapshot ? productSnapshot.name : 'Produk tidak ditemukan!',
+        'idArticle': articleSnapshot ? articleSnapshot.idArticle : 'Artikel tidak ditemukan',
+        'article': articleSnapshot ? articleSnapshot.name : 'Artikel tidak ditemukan',
         'createdAt': createdAt,
     };
 
