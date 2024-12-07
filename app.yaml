@@ -1,6 +1,6 @@
 runtime: nodejs18
 
-service: development
+service: default
 
 entrypoint: npm run start
 
