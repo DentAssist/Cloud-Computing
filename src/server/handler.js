@@ -404,7 +404,9 @@ async function postPredictHandler(request, h) {
         });
         response.code(401);
         return response;
-    }
+    };
+
+    const userSnapshot = isUserExist.docs[0].data();
 
     // Predict image
     const { confidenceScore, label, suggestion, explanation } = await predictClassification(model, image);
@@ -419,6 +421,10 @@ async function postPredictHandler(request, h) {
     const productDoc = await productRef.where('disease', '==', label).get();
     const productSnapshot = !productDoc.empty ? productDoc.docs[0].data() : null;
 
+    const clinicRef = db.collection('clinics');
+    const clinicDoc = await clinicRef.where('city', '==', userSnapshot.city).get();
+    const clinicSnapshot = !clinicDoc.empty ? clinicDoc.docs[0].data() : null;
+
     const data = {
         'id': id,
         'idUser': idUser, 
@@ -426,6 +432,7 @@ async function postPredictHandler(request, h) {
         'confidenceScore': confidenceScore,
         'explanation': explanation,
         'suggestion': suggestion,
+        'idClinic': clinicSnapshot ? clinicSnapshot.idClinic : 'Klinik belum tersedia di wilayah Anda!',
         'idProduct': productSnapshot ? productSnapshot.idProduct : 'Produk tidak ditemukan!',
         'product': productSnapshot ? productSnapshot.name : 'Produk tidak ditemukan!',
         'idArticle': articleSnapshot ? articleSnapshot.idArticle : 'Artikel tidak ditemukan',
@@ -444,7 +451,7 @@ async function postPredictHandler(request, h) {
     });
     response.code(201);
     return response;
-}
+};
 
 async function postSignupHandler(request, h) {
     const { email, username, password, city } = request.payload;
