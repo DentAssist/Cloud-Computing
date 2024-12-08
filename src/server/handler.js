@@ -1,6 +1,6 @@
 const { all } = require('@tensorflow/tfjs-node');
 const { db } = require('../services/storeData');
-const { predictClassification, findUserEmail, addUser }  = require('../services/inferenceService');
+const { predictClassification, findUserEmail, addUser, uploadImageToBucket, getSignedUrl }  = require('../services/inferenceService');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 
@@ -91,9 +91,15 @@ async function getAllHistoryHandler(request, h) {
         const historyRef = db.collection('histories').where('idUser', '==', idUser);
         const historyDoc = await historyRef.get();
 
-        const histories = historyDoc.docs.map((doc) => ({
-            ...doc.data(),
-        }));
+        const histories = await Promise.all(
+            historyDoc.docs.map(async (doc) => {
+                const data = doc.data();
+                if (data.imageUrl) {
+                    data.imageUrl = await getSignedUrl(data.imageUrl);
+                }
+                return data;
+            })
+        );
 
         return h.response({
             status: 'success',
@@ -179,6 +185,10 @@ async function getHistoryByIdHandler(request, h) {
         }
 
         const historyData = historyDoc.docs[0].data();
+
+        if (historyData.imageUrl) {
+            historyData.imageUrl = await getSignedUrl(historyData.imageUrl);
+        };
 
         return h.response({
             status: 'success',
@@ -425,11 +435,14 @@ async function postPredictHandler(request, h) {
     const clinicDoc = await clinicRef.where('city', '==', userSnapshot.city).get();
     const clinicSnapshot = !clinicDoc.empty ? clinicDoc.docs[0].data() : null;
 
+    const fileName = `predict-result/image/${id}}-${Date.now()}.jpg`;
+
     const data = {
         'id': id,
         'idUser': idUser, 
         'label': label,
         'confidenceScore': confidenceScore,
+        'imageUrl': fileName,
         'explanation': explanation,
         'suggestion': suggestion,
         'idClinic': clinicSnapshot ? clinicSnapshot.idClinic : 'Klinik belum tersedia di wilayah Anda!',
@@ -443,6 +456,17 @@ async function postPredictHandler(request, h) {
     // Store data to Firestore 'histories' collection
     const historyRef = db.collection('histories');
     await historyRef.doc(id).set(data);
+
+    try {
+        await uploadImageToBucket(image, fileName);
+    } catch (error) {
+        const response = h.response ({
+            status: 'fail',
+            message: `Failed to upload image to bucket: ${error}`,
+        });
+        response.code(500);
+        return response;
+    };
 
     const response = h.response({
         status: 'success',

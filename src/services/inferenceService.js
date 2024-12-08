@@ -2,6 +2,8 @@ const tf = require('@tensorflow/tfjs-node');
 const InputError = require('../exceptions/InputError');
 const { db } = require('./storeData');
 const bcrypt = require('bcrypt');
+const { bucket } = require('./storeImage');
+const { version } = require('joi');
 
 async function predictClassification(model, image) {
     try {
@@ -86,4 +88,29 @@ async function findUserEmail(email) {
     return snapshot.docs[0].data();
 };
 
-module.exports = { predictClassification, addUser, findUserEmail };
+async function uploadImageToBucket (image, fileName) {
+    const file = bucket.file(`${fileName}`);
+
+    try {
+        await file.save(image, {
+            metadata: {contentType: 'image/jpeg'},
+        });
+    } catch (error) {
+        console.error('Error uploading file to bucket: ', error.message);
+        throw new Error('Failed to upload file');
+    }
+};
+
+async function getSignedUrl (filePath) {
+    const file = bucket.file(filePath);
+    const options = {
+        version: 'v4',
+        action: 'read',
+        expires: Date.now() + 60 * 60 * 1000,
+    };
+
+    const [signedUrl] = await file.getSignedUrl(options);
+    return signedUrl;
+};
+
+module.exports = { predictClassification, addUser, findUserEmail, uploadImageToBucket, getSignedUrl };
