@@ -52,7 +52,7 @@ async function predictClassification(model, image) {
     }
 };
 
-async function addUser(email, username, password) {
+async function addUser(email, username, password, city) {
     try {
         const userRef = db.collection('users');
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -65,6 +65,7 @@ async function addUser(email, username, password) {
             'email': email,
             'username': username,
             'password': hashedPassword,
+            'city': city,
             'profileImage': defaultImage,
             createdAt,
         };
