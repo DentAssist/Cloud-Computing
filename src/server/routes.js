@@ -129,6 +129,7 @@ const routes = [
                     email: Joi.string().email().optional().description('User email'),
                     password: Joi.string().optional().description('User password'),
                     city: Joi.string().optional().description('User city'),
+                    profileImage: Joi.any()
                 }),
             },
         },

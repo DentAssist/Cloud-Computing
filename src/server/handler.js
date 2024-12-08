@@ -36,7 +36,7 @@ async function getUserHandler(request, h) {
 
 async function editUserHandler(request, h) {
     const { idUser } = request.params;
-    const { username, email, password, city } = request.payload;
+    const { username, email, password, city, profileImage } = request.payload;
     const updatedAt = new Date().toISOString();
 
     try {
@@ -56,6 +56,7 @@ async function editUserHandler(request, h) {
             email: email || userData.email,
             password: password || userData.password,
             city: city || userData.city,
+            profileImage: profileImage || userData.profileImage,
             updatedAt,
         };
         await userRef.update(updateData);
@@ -559,6 +560,10 @@ async function loginHandler(request, h) {
         status: 'success',
         message: 'Login Success!',
         idUser: user.id,
+        username: user.username,
+        email: user.email,
+        city: user.city,
+        profileImage: user.profileImage,
     });
     response.state('session', user.id, {ttl: 24 * 60 * 60 * 1000, isHttpOnly: true, isSecure: true});
     response.code(200);
