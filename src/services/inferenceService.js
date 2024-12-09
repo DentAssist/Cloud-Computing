@@ -20,7 +20,7 @@ async function predictClassification(model, image) {
         const scores = await prediction.data(); 
         const confidenceScore = Math.max(...scores) * 100; // Ambil skor tertinggi
 
-        const classes = ['Calculus', 'Hypodontia', 'Healthy', 'Mouth Ulcer', 'Caries'];
+        const classes = ['Calculus', 'Caries', 'Healthy', 'Hypodontia', 'Mouth Ulcer'];
         const classResult = tf.argMax(prediction, axis=1).dataSync()[0];
         const label = classes[classResult];
 
