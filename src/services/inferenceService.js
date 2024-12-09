@@ -27,23 +27,23 @@ async function predictClassification(model, image) {
         let suggestion, explanation;
         switch (label) {
             case 'Calculus':
-                explanation = 'Penyakit Calculus adalah ...';
+                explanation = 'Karang gigi adalah timbunan plak yang membentuk lapisan seperti kotoran yang mengeras di gigi. Berbeda dengan plak biasa, kondisi ini lebih sulit untuk dihilangkan dengan sikat gigi biasa. Hal yang menjadi penyebab karang gigi adalah plak yang tidak kamu bersihkan, hingga akhirnya menumpuk dan mengeras pada gigi.';
                 suggestion = 'Anda disarankan untuk mengobati Calculus';
                 break;
             case 'Hypodontia':
-                explanation = 'Penyakit Hypodontia adalah ...';
+                explanation = 'Hypodontia adalah kelainan genetik pada gigi ketika terdapat satu atau lebih gigi yang tidak tumbuh sama sekali. Tingkat keparahan hypodontia berbeda pada tiap orang dan ditentukan berdasarkan jumlah gigi yang hilang. Tanpa penanganan, kondisi ini dapat memengaruhi kemampuan makan, mengunyah, hingga berbicara.';
                 suggestion = 'Anda disarankan untuk mengobati Hypodontia';
                 break;
             case 'Healthy':
-                explanation = 'Mulut anda sehat';
+                explanation = 'Gigi yang sehat memiliki warna putih alami dengan sedikit krem kekuningan, permukaan halus tanpa retakan atau lubang, serta tersusun rapi tanpa rasa nyeri atau sensitivitas berlebihan. Gusi yang sehat berwarna pink pucat, tidak mudah berdarah, dan nafas tetap segar menandakan kebersihan mulut yang terjaga.';
                 suggestion = 'Anda disarankan untuk terus menjaga kesehatan mulut dan gigi Anda';
                 break;
             case 'Mouth Ulcer':
-                explanation = 'Penyakit Mouth Ulcer (Sariawan) adalah ...';
+                explanation = 'Mouth ulcer atau disebut juga dengan istilah aphthous stomatitis atau sariawan adalah kondisi hilangnya atau terkikisnya bagian jaringan halus yang melapisi bagian dalam mulut (mucous membrane).';
                 suggestion = 'Anda disarankan untuk mengobati Sariawan';
                 break;
             case 'Caries':
-                explanation = 'Penyakit Caries adalah ...';
+                explanation = 'Karies gigi adalah kondisi ketika lapisan struktur gigi mengalami kerusakan secara bertahap. Kondisi ini terjadi ketika bakteri yang melekat di gigi, terutama Streptococcus mutans, menghasilkan asam dari sisa-sisa makanan seperti karbohidrat. Asam tersebut bisa merusak jaringan keras gigi, dimulai dari lapisan terluar atau enamel gigi, lalu lapisan tengah atau dentin dan pada akhirnya merusak akar gigi.';
                 suggestion = 'Anda disarankan untuk mengobati Caries';
                 break;
         }

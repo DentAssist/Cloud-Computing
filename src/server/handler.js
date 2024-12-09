@@ -426,11 +426,17 @@ async function postPredictHandler(request, h) {
 
     const articleRef = db.collection('articles');
     const articleDoc = await articleRef.where('disease', '==', label).get();
-    const articleSnapshot = !articleDoc.empty ? articleDoc.docs[0].data() : null;
+    const articlesMap = {};
+    articleDoc.forEach((doc) => {
+        articlesMap[doc.id] = doc.data();
+    });
 
     const productRef = db.collection('products');
     const productDoc = await productRef.where('disease', '==', label).get();
-    const productSnapshot = !productDoc.empty ? productDoc.docs[0].data() : null;
+    const productsMap = {};
+    productDoc.forEach((doc) => {
+        productsMap[doc.id] = doc.data();
+    });
 
     const clinicRef = db.collection('clinics');
     const clinicDoc = await clinicRef.where('city', '==', userSnapshot.city).get();
@@ -439,19 +445,17 @@ async function postPredictHandler(request, h) {
     const fileName = `predict-result/image/${id}}-${Date.now()}.jpg`;
 
     const data = {
-        'id': id,
-        'idUser': idUser, 
-        'label': label,
-        'confidenceScore': confidenceScore,
-        'imageUrl': fileName,
-        'explanation': explanation,
-        'suggestion': suggestion,
-        'idClinic': clinicSnapshot ? clinicSnapshot.idClinic : 'Klinik belum tersedia di wilayah Anda!',
-        'idProduct': productSnapshot ? productSnapshot.idProduct : 'Produk tidak ditemukan!',
-        'product': productSnapshot ? productSnapshot.name : 'Produk tidak ditemukan!',
-        'idArticle': articleSnapshot ? articleSnapshot.idArticle : 'Artikel tidak ditemukan',
-        'article': articleSnapshot ? articleSnapshot.name : 'Artikel tidak ditemukan',
-        'createdAt': createdAt,
+        id,
+        idUser,
+        label,
+        confidenceScore,
+        imageUrl: fileName,
+        explanation,
+        suggestion,
+        clinic: clinicSnapshot || { message: 'Data klinik tidak ditemukan!' },
+        products: Object.keys(productsMap).length > 0 ? productsMap : { message: 'Produk tidak ditemukan!' },
+        articles: Object.keys(articlesMap).length > 0 ? articlesMap : { message: 'Artikel tidak ditemukan' },
+        createdAt,
     };
 
     // Store data to Firestore 'histories' collection
