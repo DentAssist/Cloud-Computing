@@ -425,7 +425,7 @@ async function postPredictHandler(request, h) {
     const createdAt = new Date().toISOString();
 
     const articleRef = db.collection('articles');
-    const articleDoc = await articleRef.where('disease', '==', label).get();
+    const articleDoc = await articleRef.where('disease', '==', label).limit(3).get();
     const articles = articleDoc.empty ? []
         : articleDoc.docs.map((doc) => {
             const { idArticle, ...data } = doc.data(); 
@@ -433,7 +433,7 @@ async function postPredictHandler(request, h) {
         });
 
     const productRef = db.collection('products');
-    const productDoc = await productRef.where('disease', '==', label).get();
+    const productDoc = await productRef.where('disease', '==', label).limit(5).get();
     const products = productDoc.empty ? []
         : productDoc.docs.map((doc) => {
             const { idProduct, ...data } = doc.data(); 
