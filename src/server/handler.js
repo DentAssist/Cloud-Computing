@@ -426,21 +426,27 @@ async function postPredictHandler(request, h) {
 
     const articleRef = db.collection('articles');
     const articleDoc = await articleRef.where('disease', '==', label).get();
-    const articlesMap = {};
-    articleDoc.forEach((doc) => {
-        articlesMap[doc.id] = doc.data();
-    });
+    const articles = articleDoc.empty ? []
+        : articleDoc.docs.map((doc) => {
+            const { idArticle, ...data } = doc.data(); 
+            return data;
+        });
 
     const productRef = db.collection('products');
     const productDoc = await productRef.where('disease', '==', label).get();
-    const productsMap = {};
-    productDoc.forEach((doc) => {
-        productsMap[doc.id] = doc.data();
-    });
+    const products = productDoc.empty ? []
+        : productDoc.docs.map((doc) => {
+            const { idProduct, ...data } = doc.data(); 
+            return data;
+        });
 
     const clinicRef = db.collection('clinics');
     const clinicDoc = await clinicRef.where('city', '==', userSnapshot.city).get();
-    const clinicSnapshot = !clinicDoc.empty ? clinicDoc.docs[0].data() : null;
+    const clinic = clinicDoc.empty ? { message: 'Data klinik tidak ditemukan!' }
+        : (() => {
+            const { idClinic, ...data } = clinicDoc.docs[0].data(); 
+            return data;
+        })();
 
     const fileName = `predict-result/image/${id}}-${Date.now()}.jpg`;
 
@@ -452,9 +458,9 @@ async function postPredictHandler(request, h) {
         imageUrl: fileName,
         explanation,
         suggestion,
-        clinic: clinicSnapshot || { message: 'Data klinik tidak ditemukan!' },
-        products: Object.keys(productsMap).length > 0 ? productsMap : { message: 'Produk tidak ditemukan!' },
-        articles: Object.keys(articlesMap).length > 0 ? articlesMap : { message: 'Artikel tidak ditemukan' },
+        clinic,
+        products: products.length > 0 ? products : [{ message: 'Produk tidak ditemukan!' }],
+        articles: articles.length > 0 ? articles : [{ message: 'Artikel tidak ditemukan!' }],
         createdAt,
     };
 
