@@ -40,12 +40,4 @@ The API documentation for the DentAssist application is available at:
 ## Google Cloud Architecture
 ![Google Cloud Architecture](https://github.com/user-attachments/assets/7708524c-6662-424c-b820-7201bfe5fe83)
 
-### Design Considerations
 
-1. **NoSQL Database**: Firestore is used as the primary database for managing structured data due to its scalability, low latency, and easy integration with GCP services.
-2. **API Endpoint Design**: The endpoints are designed to handle RESTful requests efficiently, leveraging Hapi.js for backend operations and TensorFlow/tfjs-node for machine learning model integrations.
-3. **Google Cloud Architecture**: The architecture includes Firestore for persistent data storage, Cloud Storage for model storage, and App Engine for deploying the backend application.
-
----
-
-Feel free to customize and expand the content based on additional details or specific requirements of your project.
