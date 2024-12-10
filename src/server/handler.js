@@ -468,6 +468,8 @@ async function postPredictHandler(request, h) {
     const historyRef = db.collection('histories');
     await historyRef.doc(id).set(data);
 
+    data.signedUrl = await getSignedUrl(data.imageUrl);
+
     try {
         await uploadImageToBucket(image, fileName);
     } catch (error) {
