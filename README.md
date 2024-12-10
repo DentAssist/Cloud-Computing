@@ -29,7 +29,7 @@ GCP offers a suite of cloud computing services that power this project, providin
 ## API Documentation
 
 The API documentation for the DentAssist application is available at:
-[API Documentation]()
+[API Documentation](https://dent-assist-bangkit.et.r.appspot.com/documentation)
 
 ## NoSQL Database Schema
 ![NoSQL Database Schema](https://github.com/user-attachments/assets/fb34df6c-d2f6-4bab-86e6-decf3feb4d54)
