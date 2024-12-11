@@ -425,20 +425,24 @@ async function postPredictHandler(request, h) {
     const createdAt = new Date().toISOString();
 
     const articleRef = db.collection('articles');
-    const articleDoc = await articleRef.where('disease', '==', label).limit(3).get();
+    const articleDoc = await articleRef.where('disease', '==', label).get();
     const articles = articleDoc.empty ? []
         : articleDoc.docs.map((doc) => {
             const { idArticle, ...data } = doc.data(); 
             return data;
         });
+    const articleShuffler = articles.sort(() => 0.5 - Math.random());
+    const shuffledArticle = articleShuffler.slice(0, 3);
 
     const productRef = db.collection('products');
-    const productDoc = await productRef.where('disease', '==', label).limit(5).get();
+    const productDoc = await productRef.where('disease', '==', label).get();
     const products = productDoc.empty ? []
         : productDoc.docs.map((doc) => {
             const { idProduct, ...data } = doc.data(); 
             return data;
         });
+    const productShuffler = products.sort(() => 0.5 - Math.random());
+    const shuffledProduct = productShuffler.slice(0, 3);
 
     const clinicRef = db.collection('clinics');
     const clinicDoc = await clinicRef.where('city', '==', userSnapshot.city).get();
@@ -459,8 +463,8 @@ async function postPredictHandler(request, h) {
         explanation,
         suggestion,
         clinic,
-        products: products.length > 0 ? products : [{ message: 'Produk tidak ditemukan!' }],
-        articles: articles.length > 0 ? articles : [{ message: 'Artikel tidak ditemukan!' }],
+        products: shuffledProduct.length > 0 ? shuffledProduct : [{ message: 'Produk tidak ditemukan!' }],
+        articles: shuffledArticle.length > 0 ? shuffledArticle : [{ message: 'Artikel tidak ditemukan!' }],
         createdAt,
     };
 
