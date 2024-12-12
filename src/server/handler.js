@@ -429,6 +429,8 @@ async function postPredictHandler(request, h) {
     const articles = articleDoc.empty ? []
         : articleDoc.docs.map((doc) => {
             const { idArticle, ...data } = doc.data(); 
+            const title = 'Artikel';
+            doc.ref.update({title});
             return data;
         });
     const articleShuffler = articles.sort(() => 0.5 - Math.random());
@@ -439,6 +441,8 @@ async function postPredictHandler(request, h) {
     const products = productDoc.empty ? []
         : productDoc.docs.map((doc) => {
             const { idProduct, ...data } = doc.data(); 
+            const title = 'Produk';
+            doc.ref.update({title});
             return data;
         });
     const productShuffler = products.sort(() => 0.5 - Math.random());
@@ -448,7 +452,9 @@ async function postPredictHandler(request, h) {
     const clinicDoc = await clinicRef.where('city', '==', userSnapshot.city).get();
     const clinic = clinicDoc.empty ? { message: 'Data klinik tidak ditemukan!' }
         : (() => {
-            const { idClinic, ...data } = clinicDoc.docs[0].data(); 
+            const { idClinic, ...data } = clinicDoc.docs[0].data();
+            const title = 'Klinik';
+            doc.ref.update({title}); 
             return data;
         })();
 
