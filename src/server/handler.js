@@ -450,11 +450,13 @@ async function postPredictHandler(request, h) {
 
     const clinicRef = db.collection('clinics');
     const clinicDoc = await clinicRef.where('city', '==', userSnapshot.city).get();
-    const clinic = clinicDoc.empty ? { message: 'Data klinik tidak ditemukan!' }
+    const clinic = clinicDoc.empty
+        ? { message: 'Data klinik tidak ditemukan!' }
         : (() => {
-            const { idClinic, ...data } = clinicDoc.docs[0].data();
+            const firstClinicDoc = clinicDoc.docs[0];
+            const { idClinic, ...data } = firstClinicDoc.data();
             const title = 'Klinik';
-            doc.ref.update({title}); 
+            firstClinicDoc.ref.update({ title }); 
             return { ...data, title };
         })();
 
