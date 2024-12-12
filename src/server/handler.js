@@ -431,7 +431,7 @@ async function postPredictHandler(request, h) {
             const { idArticle, ...data } = doc.data(); 
             const title = 'Artikel';
             doc.ref.update({title});
-            return data;
+            return { ...data, title };
         });
     const articleShuffler = articles.sort(() => 0.5 - Math.random());
     const shuffledArticle = articleShuffler.slice(0, 3);
@@ -443,7 +443,7 @@ async function postPredictHandler(request, h) {
             const { idProduct, ...data } = doc.data(); 
             const title = 'Produk';
             doc.ref.update({title});
-            return data;
+            return { ...data, title };
         });
     const productShuffler = products.sort(() => 0.5 - Math.random());
     const shuffledProduct = productShuffler.slice(0, 3);
@@ -455,7 +455,7 @@ async function postPredictHandler(request, h) {
             const { idClinic, ...data } = clinicDoc.docs[0].data();
             const title = 'Klinik';
             doc.ref.update({title}); 
-            return data;
+            return { ...data, title };
         })();
 
     const fileName = `predict-result/image/${id}}-${Date.now()}.jpg`;
