@@ -36,8 +36,9 @@ async function getUserHandler(request, h) {
 
 async function editUserHandler(request, h) {
     const { idUser } = request.params;
-    const { username, email, password, city, profileImage } = request.payload;
+    const { username, email, password, city } = request.payload;
     const updatedAt = new Date().toISOString();
+    let profileImage = request.payload.profileImage;
 
     try {
         const userRef = db.collection('users').doc(idUser);
@@ -51,14 +52,28 @@ async function editUserHandler(request, h) {
         }
 
         const userData = userDoc.data();
+        
+        if (profileImage && profileImage.path) {
+            const filePath = profileImage.path; 
+            const fileName = `${idUser}_${Date.now()}${path.extname(filePath)}`;
+            const destination = path.join(__dirname, 'uploads', fileName);
+
+            fs.renameSync(filePath, destination);
+
+            profileImage = destination;
+        } else {
+            profileImage = userData.profileImage; 
+        }
+
         const updateData = {
             username: username || userData.username,
             email: email || userData.email,
             password: password || userData.password,
             city: city || userData.city,
-            profileImage: profileImage || userData.profileImage,
+            profileImage,
             updatedAt,
         };
+
         await userRef.update(updateData);
 
         return h.response({

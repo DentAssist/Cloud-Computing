@@ -119,7 +119,7 @@ const routes = [
         options: {
             tags: ['api', 'user'],
             description: 'Update user profile',
-            notes: 'Requires user ID and updated profile details.',
+            notes: 'Requires user ID and updated profile details, including file upload.',
             validate: {
                 params: Joi.object({
                     idUser: Joi.string().required().description('User ID'),
@@ -130,10 +130,19 @@ const routes = [
                     password: Joi.string().optional().description('User password'),
                     city: Joi.string().optional().description('User city'),
                     profileImage: Joi.any()
+                        .meta({ swaggerType: 'file' })
+                        .optional()
+                        .description('Profile image file'),
                 }),
             },
+            payload: {
+                allow: 'multipart/form-data',
+                multipart: true,
+                output: 'stream',
+                parse: true
+            },
         },
-    },
+    },    
     {
         path: '/users/{idUser}/histories',
         method: 'GET',
