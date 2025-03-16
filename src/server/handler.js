@@ -36,9 +36,8 @@ async function getUserHandler(request, h) {
 
 async function editUserHandler(request, h) {
     const { idUser } = request.params;
-    const { username, email, password, city } = request.payload;
+    const { username, email, password, city, profileImage } = request.payload;
     const updatedAt = new Date().toISOString();
-    let profileImage = request.payload.profileImage;
 
     try {
         const userRef = db.collection('users').doc(idUser);
@@ -52,17 +51,27 @@ async function editUserHandler(request, h) {
         }
 
         const userData = userDoc.data();
-        
-        if (profileImage && profileImage.path) {
-            const filePath = profileImage.path; 
-            const fileName = `${idUser}_${Date.now()}${path.extname(filePath)}`;
-            const destination = path.join(__dirname, 'uploads', fileName);
 
-            fs.renameSync(filePath, destination);
+        // Jika ada gambar baru, upload ke bucket
+        let newProfileImage = userData.profileImage; // Default pakai yang lama
 
-            profileImage = destination;
-        } else {
-            profileImage = userData.profileImage; 
+        if (profileImage && profileImage._data) {
+            try {
+                const fileName = `user/profile/${idUser}-${Date.now()}.jpg`;
+
+                console.log(`Uploading image for user ${idUser} as ${fileName}`);
+
+                await uploadImageToBucket(profileImage._data, fileName);
+
+                newProfileImage = `https://storage.googleapis.com/dent-assist-bucket/${fileName}`;
+                console.log(`File uploaded successfully: ${newProfileImage}`);
+            } catch (error) {
+                console.error('Error uploading profile image:', error);
+                return h.response({
+                    status: 'fail',
+                    message: `Failed to upload profile image: ${error.message}`,
+                }).code(500);
+            }
         }
 
         const updateData = {
@@ -70,7 +79,7 @@ async function editUserHandler(request, h) {
             email: email || userData.email,
             password: password || userData.password,
             city: city || userData.city,
-            profileImage,
+            profileImage: newProfileImage,
             updatedAt,
         };
 
@@ -79,9 +88,11 @@ async function editUserHandler(request, h) {
         return h.response({
             status: 'success',
             message: 'User data has been updated successfully.',
+            profileImageUrl: newProfileImage,
         }).code(200);
 
     } catch (error) {
+        console.error('Error updating user:', error);
         return h.response({
             status: 'error',
             message: 'Internal server error.',
