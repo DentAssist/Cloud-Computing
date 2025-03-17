@@ -77,5 +77,5 @@ Explore the design of the API endpoints here:
 | **Role**               | **ID**           | **Name**                                                                                 |
 |------------------------|------------------|----------------------------------------------------------------------------------------- |
 | **Cloud Computing**    | C312B4KY0809     | [Bani Rijal Barru Faza](https://www.linkedin.com/in/bani-rijal-81a430282/)               |
-| **Cloud Computing**    | C312B4KX0862     | Bintang Immanuela Astrid Que                                                             |
+| **Cloud Computing**    | C312B4KX0862     | [Bintang Immanuela Astrid Que](www.linkedin.com/in/bintang-que-9919b92b5)                                                             |
 
