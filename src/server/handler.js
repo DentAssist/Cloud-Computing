@@ -277,9 +277,13 @@ async function deleteHistoryByIdHandler(request, h) {
 async function getAllArticleHandler(request, h) {
     try {
         const articleRef = db.collection('articles');
-        const articles = (await articleRef.get()).docs.map((doc) => ({
-            ...doc.data(),
-        }));
+        const articles = (await articleRef.get()).docs.map((doc) => {
+            const data = doc.data();
+            return {
+                ...data,
+                image: data.image || "public/image/default-article-image.jpg",
+            };
+        });
 
         return h.response({
             status: 'success',
@@ -313,7 +317,13 @@ async function getArticleByIdHandler(request, h) {
 
         return h.response({
             status: 'success',
-            data: articleData,
+            data: {
+                disease: articleData.disease,
+                idArticle: articleData.idArticle,
+                image: articleData.image || "public/image/default-article-image.jpg",
+                link: articleData.link,
+                title: articleData.title,
+            },
         }).code(200);
 
     } catch (error) {
@@ -328,9 +338,14 @@ async function getArticleByIdHandler(request, h) {
 async function getAllClinicHandler(request, h) {
     try {
         const clinicRef = db.collection('clinics');
-        const clinics = (await clinicRef.get()).docs.map((doc) => ({
-            ...doc.data(),
-        }));
+        const clinics = (await clinicRef.get()).docs.map((doc) => {
+            const data = doc.data();
+            return {
+                ...data,
+                image: data.image || "public/image/default-clinic-image.jpg",
+                rating: data.rating || 0.0,
+            };
+        });
 
         return h.response({
             status: 'success',
@@ -364,7 +379,11 @@ async function getClinicByIdHandler(request, h) {
 
         return h.response({
             status: 'success',
-            data: clinicData,
+            data: {
+                ...clinicData,
+                image: clinicData.image || "public/image/default-clinic-image.jpg",
+                rating: clinicData.rating || 0.0,
+            },
         }).code(200);
 
     } catch (error) {
@@ -379,9 +398,14 @@ async function getClinicByIdHandler(request, h) {
 async function getAllProductHandler(request, h) {
     try {
         const productRef = db.collection('products');
-        const products = (await productRef.get()).docs.map((doc) => ({
-            ...doc.data(),
-        }));
+        const products = (await productRef.get()).docs.map((doc) => {
+            const data = doc.data();
+            return {
+                ...data,
+                rating: data.rating || 0.0,
+                link_photo: data.link_photo || "public/image/default-product-image.jpg",
+            };
+        });
 
         return h.response({
             status: 'success',
@@ -415,7 +439,11 @@ async function getProductByIdHandler(request, h) {
 
         return h.response({
             status: 'success',
-            data: productData,
+            data: {
+                ...productData,
+                rating: productData.rating || 0.0,
+                link_photo: productData.link_photo || "public/image/default-product-image.jpg",
+            },
         }).code(200);
 
     } catch (error) {
