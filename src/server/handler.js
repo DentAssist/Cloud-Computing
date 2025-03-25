@@ -79,7 +79,7 @@ async function editUserHandler(request, h) {
             email: email || userData.email,
             password: password || userData.password,
             city: city || userData.city,
-            profileImage: newProfileImage,
+            profileImage: newProfileImage || userData.profileImage,
             updatedAt,
         };
 
@@ -281,7 +281,7 @@ async function getAllArticleHandler(request, h) {
             const data = doc.data();
             return {
                 ...data,
-                image: data.image || "public/image/default-article-image.jpg",
+                image: data.image || "https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg",
             };
         });
 
@@ -320,7 +320,7 @@ async function getArticleByIdHandler(request, h) {
             data: {
                 disease: articleData.disease,
                 idArticle: articleData.idArticle,
-                image: articleData.image || "public/image/default-article-image.jpg",
+                image: articleData.image || "https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg",
                 link: articleData.link,
                 title: articleData.title,
             },
@@ -342,7 +342,7 @@ async function getAllClinicHandler(request, h) {
             const data = doc.data();
             return {
                 ...data,
-                image: data.image || "public/image/default-clinic-image.jpg",
+                image: data.image || "https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg",
                 rating: data.rating || 0.0,
             };
         });
@@ -381,7 +381,7 @@ async function getClinicByIdHandler(request, h) {
             status: 'success',
             data: {
                 ...clinicData,
-                image: clinicData.image || "public/image/default-clinic-image.jpg",
+                image: clinicData.image || "https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg",
                 rating: clinicData.rating || 0.0,
             },
         }).code(200);
@@ -403,7 +403,7 @@ async function getAllProductHandler(request, h) {
             return {
                 ...data,
                 rating: data.rating || 0.0,
-                link_photo: data.link_photo || "public/image/default-product-image.jpg",
+                link_photo: data.link_photo || "https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg",
             };
         });
 
@@ -442,7 +442,7 @@ async function getProductByIdHandler(request, h) {
             data: {
                 ...productData,
                 rating: productData.rating || 0.0,
-                link_photo: productData.link_photo || "public/image/default-product-image.jpg",
+                link_photo: productData.link_photo || "https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg",
             },
         }).code(200);
 
