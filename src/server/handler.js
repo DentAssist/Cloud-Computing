@@ -406,6 +406,8 @@ async function getAllProductHandler(request, h) {
                 ...data,
                 rating: data.rating || 0.0,
                 link_photo: data.link_photo || "https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg",
+                notes: typeof data.notes === 'string' ? JSON.parse(data.notes) : [],
+                keys: data.keys ? data.keys.split(',').map((k) => k.trim()) : [],
             };
         });
 
@@ -445,7 +447,9 @@ async function getProductByIdHandler(request, h) {
                 ...productData,
                 rating: productData.rating || 0.0,
                 link_photo: productData.link_photo || "https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg",
-            },
+                notes: typeof productData.notes === 'string' ? JSON.parse(productData.notes) : [],
+                keys: data.keys ? data.keys.split(',').map((k) => k.trim()) : [],
+            },            
         }).code(200);
 
     } catch (error) {
