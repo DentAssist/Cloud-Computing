@@ -115,7 +115,9 @@ async function getAllHistoryHandler(request, h) {
             }).code(404);
         }
 
-        const historyRef = db.collection('histories').where('idUser', '==', idUser);
+        const historyRef = db.collection('histories')
+            .where('idUser', '==', idUser)
+            .orderBy('createdAt', 'desc');    
         const historyDoc = await historyRef.get();
 
         const histories = await Promise.all(
@@ -200,7 +202,8 @@ async function getHistoryByIdHandler(request, h) {
 
         const historyRef = db.collection('histories')
             .where('idUser', '==', idUser)
-            .where('id', '==', idHistory);
+            .where('id', '==', idHistory)
+            .orderBy('createdAt', 'desc');    
         
         const historyDoc = await historyRef.get();
 
@@ -247,7 +250,8 @@ async function deleteHistoryByIdHandler(request, h) {
 
         const historyRef = db.collection('histories')
             .where('idUser', '==', idUser)
-            .where('id', '==', idHistory);
+            .where('id', '==', idHistory)
+            .orderBy('createdAt', 'desc');    
         
         const historyDoc = await historyRef.get();
 
@@ -488,10 +492,14 @@ async function postPredictHandler(request, h) {
     const articleDoc = await articleRef.where('disease', '==', label).get();
     const articles = articleDoc.empty ? []
         : articleDoc.docs.map((doc) => {
-            const { idArticle, ...data } = doc.data(); 
+            const { idArticle, imageUrl, ...data } = doc.data(); 
             const title = 'Artikel';
-            doc.ref.update({title});
-            return { ...data, title };
+            doc.ref.update({ title });
+            return {
+                ...data,
+                title,
+                imageUrl: imageUrl || 'https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg',
+            };
         });
     const articleShuffler = articles.sort(() => 0.5 - Math.random());
     const shuffledArticle = articleShuffler.slice(0, 3);
@@ -500,10 +508,14 @@ async function postPredictHandler(request, h) {
     const productDoc = await productRef.where('disease', '==', label).get();
     const products = productDoc.empty ? []
         : productDoc.docs.map((doc) => {
-            const { idProduct, ...data } = doc.data(); 
+            const { idProduct, imageUrl, ...data } = doc.data(); 
             const title = 'Produk';
-            doc.ref.update({title});
-            return { ...data, title };
+            doc.ref.update({ title });
+            return {
+                ...data,
+                title,
+                imageUrl: imageUrl || 'https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg',
+            };
         });
     const productShuffler = products.sort(() => 0.5 - Math.random());
     const shuffledProduct = productShuffler.slice(0, 3);
