@@ -282,6 +282,7 @@ async function getAllArticleHandler(request, h) {
             return {
                 ...data,
                 image: data.image || "https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg",
+                keys: data.keys ? data.keys.split(',').map((k) => k.trim()) : [],
             };
         });
 
@@ -323,7 +324,8 @@ async function getArticleByIdHandler(request, h) {
                 image: articleData.image || "https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg",
                 link: articleData.link,
                 title: articleData.title,
-            },
+                keys: articleData.keys ? articleData.keys.split(',').map((k) => k.trim()) : [],
+            },            
         }).code(200);
 
     } catch (error) {
