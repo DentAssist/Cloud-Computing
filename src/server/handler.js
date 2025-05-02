@@ -74,10 +74,12 @@ async function editUserHandler(request, h) {
             }
         }
 
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const updateData = {
             username: username || userData.username,
             email: email || userData.email,
-            password: password || userData.password,
+            password: hashedPassword || userData.password,
             city: city || userData.city,
             profileImage: newProfileImage || userData.profileImage,
             updatedAt,
@@ -631,7 +633,7 @@ async function postSignupHandler(request, h) {
 
 async function loginHandler(request, h) {
     const { email, password } = request.payload;
-
+    
     const user = await findUserEmail(email);
     if (!user) {
         const response = h.response({
@@ -643,6 +645,7 @@ async function loginHandler(request, h) {
     };
     
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    
     if (email !== user.email || !isPasswordValid) {
         const response = h.response({
             status: 'fail',
