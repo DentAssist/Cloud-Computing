@@ -30,10 +30,6 @@ async function predictClassification(model, image) {
                 explanation = 'Karang gigi adalah timbunan plak yang membentuk lapisan seperti kotoran yang mengeras di gigi. Berbeda dengan plak biasa, kondisi ini lebih sulit untuk dihilangkan dengan sikat gigi biasa. Hal yang menjadi penyebab karang gigi adalah plak yang tidak kamu bersihkan, hingga akhirnya menumpuk dan mengeras pada gigi.';
                 suggestion = 'Anda disarankan untuk mengobati Calculus';
                 break;
-            case 'Hypodontia':
-                explanation = 'Hypodontia adalah kelainan genetik pada gigi ketika terdapat satu atau lebih gigi yang tidak tumbuh sama sekali. Tingkat keparahan hypodontia berbeda pada tiap orang dan ditentukan berdasarkan jumlah gigi yang hilang. Tanpa penanganan, kondisi ini dapat memengaruhi kemampuan makan, mengunyah, hingga berbicara.';
-                suggestion = 'Anda disarankan untuk mengobati Hypodontia';
-                break;
             case 'Healthy':
                 explanation = 'Gigi yang sehat memiliki warna putih alami dengan sedikit krem kekuningan, permukaan halus tanpa retakan atau lubang, serta tersusun rapi tanpa rasa nyeri atau sensitivitas berlebihan. Gusi yang sehat berwarna pink pucat, tidak mudah berdarah, dan nafas tetap segar menandakan kebersihan mulut yang terjaga.';
                 suggestion = 'Anda disarankan untuk terus menjaga kesehatan mulut dan gigi Anda';
