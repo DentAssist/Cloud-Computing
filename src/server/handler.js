@@ -287,7 +287,7 @@ async function getAllArticleHandler(request, h) {
             const data = doc.data();
             return {
                 ...data,
-                image: data.image || "https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg",
+                image: data.image || "https://storage.googleapis.com/dent-assist-bucket/default/default-article-image.jpeg",
                 keys: data.keys ? data.keys.split(',').map((k) => k.trim()) : [],
             };
         });
@@ -320,18 +320,30 @@ async function getArticleByIdHandler(request, h) {
             }).code(404);
         }
 
-        const articleData = articleDoc.data();
+        const data = articleDoc.data();
+
+        const normalizeKeys = (keys) => {
+            if (typeof keys === 'string') {
+                return keys.split(',').map(k => k.trim()).filter(k => k);
+            }
+            if (Array.isArray(keys)) {
+                return keys.map(k => typeof k === 'string' ? k.trim() : '').filter(k => k);
+            }
+            return [];
+        };
 
         return h.response({
             status: 'success',
             data: {
-                disease: articleData.disease,
-                idArticle: articleData.idArticle,
-                image: articleData.image || "https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg",
-                link: articleData.link,
-                title: articleData.title,
-                keys: articleData.keys ? articleData.keys.split(',').map((k) => k.trim()) : [],
-            },            
+                idArticle: data.idArticle || '',
+                title: data.title || 'Artikel',
+                disease: data.disease || 'Umum',
+                description: data.description || 'Lorem ipsum dolor sit amet.',
+                content: data.content || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent a quam a libero dapibus dignissim. Nullam nec fermentum nunc, nec congue lorem. Suspendisse potenti. Duis tincidunt, justo nec porttitor gravida, nulla purus malesuada lacus, ut blandit turpis urna at velit. Phasellus ullamcorper eros vitae leo finibus, sit amet fermentum lorem suscipit.',
+                imageUrl: data.imageUrl || 'https://storage.googleapis.com/dent-assist-bucket/default/default-article-image.jpeg',
+                link: data.link || '',
+                keys: normalizeKeys(data.keys),
+            },
         }).code(200);
 
     } catch (error) {
@@ -341,7 +353,7 @@ async function getArticleByIdHandler(request, h) {
             error: error.message,
         }).code(500);
     }
-}; 
+};
 
 async function getAllClinicHandler(request, h) {
     try {
@@ -411,7 +423,7 @@ async function getAllProductHandler(request, h) {
             return {
                 ...data,
                 rating: data.rating || 0.0,
-                link_photo: data.link_photo || "https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg",
+                link_photo: data.link_photo || "https://storage.googleapis.com/dent-assist-bucket/default/default-product-image.jpeg",
                 notes: typeof data.notes === 'string' ? JSON.parse(data.notes) : [],
                 keys: data.keys ? data.keys.split(',').map((k) => k.trim()) : [],
             };
@@ -445,17 +457,51 @@ async function getProductByIdHandler(request, h) {
             }).code(404);
         }
 
-        const productData = productDoc.data();
+        const data = productDoc.data();
+
+        const normalizeKeys = (keys) => {
+            if (typeof keys === 'string') {
+                return keys.split(',').map(k => k.trim()).filter(Boolean);
+            }
+            if (Array.isArray(keys)) {
+                return keys.map(k => typeof k === 'string' ? k.trim() : '').filter(Boolean);
+            }
+            return [];
+        };
+
+        const normalizeNotes = (notes) => {
+            if (typeof notes === 'string') {
+                try {
+                    const parsed = JSON.parse(notes);
+                    return Array.isArray(parsed) ? parsed : [parsed];
+                } catch {
+                    return [notes];
+                }
+            }
+            if (Array.isArray(notes)) {
+                return notes;
+            }
+            return ['Tidak untuk anak di bawah 5 tahun.'];
+        };
 
         return h.response({
             status: 'success',
             data: {
-                ...productData,
-                rating: productData.rating || 0.0,
-                link_photo: productData.link_photo || "https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg",
-                notes: typeof productData.notes === 'string' ? JSON.parse(productData.notes) : [],
-                keys: data.keys ? data.keys.split(',').map((k) => k.trim()) : [],
-            },            
+                idProduct: data.idProduct || '',
+                name: data.name || 'Lorem Ipsum',
+                price: data.price || '0',
+                dosis: data.dosis || '1x sehari',
+                ket: data.ket || 'Lorem ipsum dolor sit amet',
+                link_photo: data.link_photo || data.imageUrl || 'https://storage.googleapis.com/dent-assist-bucket/default/default-product-image.jpeg',
+                title: data.title || 'Produk',
+                disease: data.disease || 'Umum',
+                category: data.category || 'Perawatan',
+                shape: data.shape || 'Tablet',
+                description: data.description || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                notes: normalizeNotes(data.notes),
+                keys: normalizeKeys(data.keys),
+                rating: data.rating || 0.0,
+            },
         }).code(200);
 
     } catch (error) {
@@ -464,8 +510,8 @@ async function getProductByIdHandler(request, h) {
             message: 'Internal server error.',
             error: error.message,
         }).code(500);
-    }    
-}
+    }
+};
 
 async function postPredictHandler(request, h) {
     const { idUser, image } = request.payload;
@@ -481,56 +527,98 @@ async function postPredictHandler(request, h) {
         });
         response.code(401);
         return response;
-    };
+    }
 
     const userSnapshot = isUserExist.docs[0].data();
+
+    const normalizeKeys = (keys) => {
+        if (typeof keys === 'string') {
+            return keys.split(',').map(k => k.trim()).filter(k => k);
+        }
+        if (Array.isArray(keys)) {
+            return keys.map(k => typeof k === 'string' ? k.trim() : '').filter(k => k);
+        }
+        return [];
+    };
+
+    const normalizeNotes = (notes) => {
+        if (typeof notes === 'string') {
+            try {
+                return JSON.parse(notes);
+            } catch {
+                return [notes];
+            }
+        }
+        if (Array.isArray(notes)) {
+            return notes;
+        }
+        return [];
+    };
 
     // Predict image
     const { confidenceScore, label, suggestion, explanation } = await predictClassification(model, image);
     const id = crypto.randomUUID();  
     const createdAt = new Date().toISOString();
 
+    // Get Articles
     const articleRef = db.collection('articles');
     const articleDoc = await articleRef.where('disease', '==', label).get();
     const articles = articleDoc.empty ? []
         : articleDoc.docs.map((doc) => {
-            const { idArticle, imageUrl, ...data } = doc.data(); 
+            const data = doc.data();
             const title = 'Artikel';
             doc.ref.update({ title });
             return {
-                ...data,
+                idArticle: data.idArticle || '',
                 title,
-                imageUrl: imageUrl || 'https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg',
+                imageUrl: data.imageUrl || 'https://storage.googleapis.com/dent-assist-bucket/default/default-article-image.jpeg',
+                description: data.description || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                content: data.content || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent a quam a libero dapibus dignissim. Nullam nec fermentum nunc, nec congue lorem. Suspendisse potenti. Duis tincidunt, justo nec porttitor gravida, nulla purus malesuada lacus, ut blandit turpis urna at velit. Phasellus ullamcorper eros vitae leo finibus, sit amet fermentum lorem suscipit.',
+                disease: data.disease || 'Lorem ipsum',
+                keys: normalizeKeys(data.keys),
             };
         });
     const articleShuffler = articles.sort(() => 0.5 - Math.random());
     const shuffledArticle = articleShuffler.slice(0, 3);
 
+    // Get Products
     const productRef = db.collection('products');
     const productDoc = await productRef.where('disease', '==', label).get();
     const products = productDoc.empty ? []
         : productDoc.docs.map((doc) => {
-            const { idProduct, imageUrl, ...data } = doc.data(); 
+            const data = doc.data();
             const title = 'Produk';
             doc.ref.update({ title });
             return {
-                ...data,
+                idProduct: data.idProduct || '',
+                name: data.name || 'Lorem Ipsum',
+                price: data.price || '0',
+                dosis: data.dosis || '1x sehari',
+                ket: data.ket || 'Lorem ipsum dolor sit amet',
+                link_photo: data.imageUrl || 'https://storage.googleapis.com/dent-assist-bucket/default/default-product-image.jpeg',
                 title,
-                imageUrl: imageUrl || 'https://storage.googleapis.com/dent-assist-bucket/default/default-image.jpeg',
+                disease: data.disease || 'Umum',
+                category: data.category || 'Perawatan',
+                shape: data.shape || 'Tablet',
+                description: data.description || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                keys: normalizeKeys(keys),
+                notes: normalizeNotes(notes),
+                rating: data.rating || 0,
             };
         });
     const productShuffler = products.sort(() => 0.5 - Math.random());
     const shuffledProduct = productShuffler.slice(0, 3);
 
+    // Get Clinic
     const clinicRef = db.collection('clinics');
     const clinicDoc = await clinicRef.where('city', '==', userSnapshot.city).get();
     const clinic = clinicDoc.empty
         ? { message: 'Data klinik tidak ditemukan!' }
         : (() => {
             const firstClinicDoc = clinicDoc.docs[0];
-            const { idClinic, ...data } = firstClinicDoc.data();
+            const data = firstClinicDoc.data();
             const title = 'Klinik';
-            firstClinicDoc.ref.update({ title }); 
+            firstClinicDoc.ref.update({ title });
             return { ...data, title };
         })();
 
@@ -550,30 +638,11 @@ async function postPredictHandler(request, h) {
         createdAt,
     };
 
-    // Store data to Firestore 'histories' collection
-    const historyRef = db.collection('histories');
-    await historyRef.doc(id).set(data);
-
-    data.signedUrl = await getSignedUrl(data.imageUrl);
-
-    try {
-        await uploadImageToBucket(image, fileName);
-    } catch (error) {
-        const response = h.response ({
-            status: 'fail',
-            message: `Failed to upload image to bucket: ${error}`,
-        });
-        response.code(500);
-        return response;
-    };
-
-    const response = h.response({
+    return h.response({
         status: 'success',
-        message: 'Model is predicted successfully',
+        message: 'Prediction berhasil diproses',
         data,
-    });
-    response.code(201);
-    return response;
+    }).code(200);
 };
 
 async function postSignupHandler(request, h) {
